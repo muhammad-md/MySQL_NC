@@ -10,13 +10,6 @@ from getpass import getpass
 from mysql.connector import connect, Error
 from pymysql import *
 
-#connecting mysql database
-#connection = connect(host="localhost",user="root",password="55+DAta#3")
-#print(connection)
-
-#for executing sql operations
-#cursor = connection.cursor()
-
 #setting the window
 window = Tk()
 window.title("MYSQL NO_CODE")
@@ -24,13 +17,53 @@ window.configure(width=600, height=700)
 fontStyle = tkFont.Font(family="Candara", size=14)
 fontStyle1 = tkFont.Font(family="Candara", size=17)
 
-namelist = []
+#list to save connection details
+connection_list = []
+
+class save_connection:
+    def __init__(self, master):
+        self.master = master
+        
+        self.label1= Label(self.master, text="HOST", font = fontStyle)
+        self.label1.place(relx = 0.22, rely = 0.30, anchor = CENTER)
+        self.label2= Label(self.master, text="USER", font = fontStyle)
+        self.label2.place(relx = 0.22, rely = 0.35, anchor = CENTER)
+        self.label3= Label(self.master, text="PASSWORD", font = fontStyle)
+        self.label3.place(relx = 0.22, rely = 0.40, anchor = CENTER)
+
+        self.entry1 = Entry(self.master)
+        self.entry1.place(relx = 0.5, rely = 0.30, anchor = CENTER)
+        self.entry2 = Entry(self.master)
+        self.entry2.place(relx = 0.5, rely = 0.35, anchor = CENTER)
+        self.entry3 = Entry(self.master)
+        self.entry3.place(relx = 0.5, rely = 0.40, anchor = CENTER)
+        
+
+        self.btn1 = tk.Button(self.master, text ="CONNECT", font = fontStyle, command = self.clearpage1)
+        self.btn1.place(relx = 0.5, rely = 0.50, anchor = CENTER)
+
+    #functions to clear the page to view the next page elements
+    def clearpage1(self):
+        host = self.entry1.get()
+        user = self.entry2.get()
+        password = self.entry3.get()
+        connection_list.append(host)
+        connection_list.append(user)
+        connection_list.append(password)
+        print(connection_list)
+        self.label1.destroy()
+        self.label2.destroy()
+        self.label3.destroy()
+        self.entry1.destroy()
+        self.entry2.destroy()
+        self.entry3.destroy()
+        self.btn1.destroy()
+        self.another = mainwindow(self.master)
 
 class mainwindow:
     def __init__(self, master):
         self.master = master
 
-        self.master = master
         self.btn1 = tk.Button(self.master, text ="CREATE/DROP DATABSE", font = fontStyle1, command = self.clearpage1)
         self.btn1.place(relx = 0.5, rely = 0.40, anchor = CENTER)
         self.btn2 = tk.Button(self.master, text ="CREATE/DROP TABLE IN A DATABASE", font = fontStyle1, command = self.clearpage2)
@@ -62,45 +95,26 @@ class cd_database:
         self.btn1 = tk.Button(self.master, text ="BACK", font = fontStyle, command = self.load_back)
         self.btn1.place(relx = 0.90, rely = 0.84, anchor = CENTER)
 
-        self.label1= Label(self.master, text="HOST ", font = fontStyle)
-        self.label1.place(relx = 0.22, rely = 0.08, anchor = CENTER)
-        self.label2= Label(self.master, text="USER", font = fontStyle)
-        self.label2.place(relx = 0.22, rely = 0.12, anchor = CENTER)
-        self.label3= Label(self.master, text="PASSWORD", font = fontStyle)
-        self.label3.place(relx = 0.22, rely = 0.16, anchor = CENTER)
-
-        self.label4= Label(self.master, text="CREATE DATABASE ", font = fontStyle)
-        self.label4.place(relx = 0.22, rely = 0.30, anchor = CENTER)
-        self.label5= Label(self.master, text="DROP DATABASE ", font = fontStyle)
-        self.label5.place(relx = 0.22, rely = 0.60, anchor = CENTER)
+        self.label1= Label(self.master, text="CREATE DATABASE ", font = fontStyle)
+        self.label1.place(relx = 0.22, rely = 0.30, anchor = CENTER)
+        self.label2= Label(self.master, text="DROP DATABASE ", font = fontStyle)
+        self.label2.place(relx = 0.22, rely = 0.60, anchor = CENTER)
 
         self.entry1 = Entry(self.master)
-        self.entry1.place(relx = 0.5, rely = 0.08, anchor = CENTER)
+        self.entry1.place(relx = 0.5, rely = 0.30, anchor = CENTER)
         self.entry2 = Entry(self.master)
-        self.entry2.place(relx = 0.5, rely = 0.12, anchor = CENTER)
-        self.entry3 = Entry(self.master)
-        self.entry3.place(relx = 0.5, rely = 0.16, anchor = CENTER)
-        self.entry4 = Entry(self.master)
-        self.entry4.place(relx = 0.5, rely = 0.30, anchor = CENTER)
-        self.entry5 = Entry(self.master)
-        self.entry5.place(relx = 0.5, rely = 0.60, anchor = CENTER)
+        self.entry2.place(relx = 0.5, rely = 0.60, anchor = CENTER)
 
         def create():
             entry1 = self.entry1.get()
-            entry2 = self.entry2.get()
-            entry3 = self.entry3.get()
-            entry4 = self.entry4.get()
-            connection = connect(host="%s" %(entry1),user="%s" %(entry2),password="%s" %(entry3))
+            connection = connect(host="%s" %(connection_list[0]),user="%s" %(connection_list[1]),password="%s" %(connection_list[2]))
             cursor = connection.cursor()
-            cursor.execute("CREATE DATABASE %s" %(entry4))
+            cursor.execute("CREATE DATABASE %s" %(entry1))
         def drop():
-            entry1 = self.entry1.get()
             entry2 = self.entry2.get()
-            entry3 = self.entry3.get()
-            entry5 = self.entry5.get()
-            connection = connect(host="%s" %(entry1),user="%s" %(entry2),password="%s" %(entry3))
+            connection = connect(host="%s" %(connection_list[0]),user="%s" %(connection_list[1]),password="%s" %(connection_list[2]))
             cursor = connection.cursor()
-            cursor.execute("DROP DATABASE IF EXISTS `%s`" %(entry5))
+            cursor.execute("DROP DATABASE IF EXISTS `%s`" %(entry2))
         self.btn2 = tk.Button(self.master, text ="CREATE", font = fontStyle, command = create)
         self.btn2.place(relx = 0.5, rely = 0.35, anchor = CENTER)
         self.btn3 = tk.Button(self.master, text ="DROP", font = fontStyle, command = drop)
@@ -110,17 +124,11 @@ class cd_database:
     def load_back(self):
         self.entry1.destroy()
         self.entry2.destroy()
-        self.entry3.destroy()
-        self.entry4.destroy()
-        self.entry5.destroy()
         self.btn1.destroy()
         self.btn2.destroy()
         self.btn3.destroy()
         self.label1.destroy()
         self.label2.destroy()
-        self.label3.destroy()
-        self.label4.destroy()
-        self.label5.destroy()
         self.another = mainwindow(self.master)
 
 
@@ -131,27 +139,35 @@ class cd_table:
         self.btn1 = tk.Button(self.master, text ="BACK", font = fontStyle, command = self.load_backk)
         self.btn1.place(relx = 0.90, rely = 0.90, anchor = CENTER)
         
-        self.label1= Label(self.master, text="ENTER TABLE NAME", font = fontStyle)
+        self.label1= Label(self.master, text="ENTER DATABASE NAME", font = fontStyle)
         self.label1.place(relx = 0.22, rely = 0.30, anchor = CENTER)
-        self.label2= Label(self.master, text="ENTER NUMBER OF COLUMNS", font = fontStyle)
-        self.label2.place(relx = 0.22, rely = 0.40, anchor = CENTER)
+        self.label2= Label(self.master, text="ENTER TABLE NAME", font = fontStyle)
+        self.label2.place(relx = 0.22, rely = 0.35, anchor = CENTER)
+        self.label3= Label(self.master, text="ENTER NUMBER OF COLUMNS", font = fontStyle)
+        self.label3.place(relx = 0.22, rely = 0.40, anchor = CENTER)
         self.entry1 = Entry(self.master)
         self.entry1.place(relx = 0.6, rely = 0.30, anchor = CENTER)
         self.entry2 = Entry(self.master)
-        self.entry2.place(relx = 0.6, rely = 0.40, anchor = CENTER)
+        self.entry2.place(relx = 0.6, rely = 0.35, anchor = CENTER)
+        self.entry3 = Entry(self.master)
+        self.entry3.place(relx = 0.6, rely = 0.40, anchor = CENTER)
 
         def cols():
             self.label1.destroy()
             self.label2.destroy()
+            self.label3.destroy()
             self.btn1.destroy()
             entry1 = self.entry1.get()
-            entry2 = int(self.entry2.get())
+            entry2 = self.entry2.get()
+            entry3 = int(self.entry3.get())
             self.btn2.destroy()
-            namelist.append(entry1)
             self.entry1.destroy()
             self.entry2.destroy()
+            self.entry3.destroy()
+            connection = connect(host="%s" %(connection_list[0]), database="%s" %(entry1), user="%s" %(connection_list[1]), password="%s" %(connection_list[2]))
+            cursor0 = connection.cursor()
         
-            if entry2 == 1:
+            if entry3 == 1:
                 self.label11= Label(self.master, text="COLUMN_ONE NAME", font = fontStyle)
                 self.label11.place(relx = 0.22, rely = 0.30, anchor = CENTER)
                 self.label22= Label(self.master, text="COLUMN_ONE TYPE \n AND LENGTH", font = fontStyle)
@@ -162,15 +178,11 @@ class cd_table:
                 self.entry22 = Entry(self.master)
                 self.entry22.place(relx = 0.6, rely = 0.40, anchor = CENTER)
         
-                #cursor.execute("CREATE DATABASE %s" %(entry1))
-                def create1():
-                    connection = connect(host="localhost",user="root", database="new_database1",password="55+DAta#3")
-                    cursor2 = connection.cursor()                    
+                def create1():              
                     entry111 = self.entry11.get()
                     entry222 = self.entry22.get()
                     com = entry111 + " " + entry222
-                    for i in namelist:
-                        cursor2.execute("CREATE TABLE %s (%s)" %(i, com))
+                    cursor0.execute("CREATE TABLE %s (%s)" %(entry2, com))
 
                 def load_back9():
                     self.label11.destroy()
@@ -185,7 +197,7 @@ class cd_table:
                 self.btn3.place(relx = 0.6, rely = 0.50, anchor = CENTER)
                 self.btn39 = tk.Button(self.master, text ="BACK", font = fontStyle, command = load_back9)
                 self.btn39.place(relx = 0.9, rely = 0.90, anchor = CENTER)
-            elif entry2 == 2:
+            elif entry3 == 2:
                 self.label11= Label(self.master, text="COLUMN_ONE NAME", font = fontStyle)
                 self.label11.place(relx = 0.22, rely = 0.20, anchor = CENTER)
                 self.label22= Label(self.master, text="COLUMN_ONE TYPE \n AND LENGTH", font = fontStyle)
@@ -204,19 +216,15 @@ class cd_table:
                 self.entry33.place(relx = 0.6, rely = 0.40, anchor = CENTER)
                 self.entry44 = Entry(self.master)
                 self.entry44.place(relx = 0.6, rely = 0.50, anchor = CENTER)
-        
-                #cursor.execute("CREATE DATABASE %s" %(entry1))
+
                 def create2():
-                    connection = connect(host="localhost",user="root", database="new_database1",password="55+DAta#3")
-                    cursor3 = connection.cursor()
                     entry111 = self.entry11.get()
                     entry222 = self.entry22.get()
                     entry333 = self.entry33.get()
                     entry444 = self.entry44.get()
                     com1 = entry111 + " " + entry222
                     com2 = entry333 + " " + entry444
-                    for i in namelist:
-                        cursor3.execute("CREATE TABLE %s (%s, %s)" %(i, com1, com2))
+                    cursor0.execute("CREATE TABLE %s (%s, %s)" %(entry2, com1, com2))
                 def load_back9():
                     self.label11.destroy()
                     self.label22.destroy()
@@ -234,7 +242,7 @@ class cd_table:
                 self.btn39.place(relx = 0.9, rely = 0.90, anchor = CENTER)
                 self.btn4 = tk.Button(self.master, text ="CREATE", font = fontStyle, command = create2)
                 self.btn4.place(relx = 0.6, rely = 0.60, anchor = CENTER)
-            elif entry2 == 3:
+            elif entry3 == 3:
                 self.label11= Label(self.master, text="COLUMN_ONE NAME", font = fontStyle)
                 self.label11.place(relx = 0.22, rely = 0.10, anchor = CENTER)
                 self.label22= Label(self.master, text="COLUMN_ONE TYPE \n AND LENGTH", font = fontStyle)
@@ -262,10 +270,7 @@ class cd_table:
                 self.entry66 = Entry(self.master)
                 self.entry66.place(relx = 0.6, rely = 0.60, anchor = CENTER)
         
-                #cursor.execute("CREATE DATABASE %s" %(entry1))
                 def create3():
-                    connection = connect(host="localhost",user="root", database="new_database1",password="55+DAta#3")
-                    cursor4 = connection.cursor()
                     entry111 = self.entry11.get()
                     entry222 = self.entry22.get()
                     entry333 = self.entry33.get()
@@ -275,8 +280,7 @@ class cd_table:
                     com1 = entry111 + " " + entry222
                     com2 = entry333 + " " + entry444
                     com3 = entry555 + " " + entry666
-                    for i in namelist:
-                        cursor4.execute("CREATE TABLE %s (%s, %s, %s)" %(i, com1, com2, com3))
+                    cursor0.execute("CREATE TABLE %s (%s, %s, %s)" %(entry2, com1, com2, com3))
                     
                 def load_back9():
                     self.label11.destroy()
@@ -300,7 +304,7 @@ class cd_table:
                 self.btn5 = tk.Button(self.master, text ="CREATE", font = fontStyle, command = create3)
                 self.btn5.place(relx = 0.6, rely = 0.70, anchor = CENTER)
                 
-            elif entry2 == 4:
+            elif entry3 == 4:
                 self.label11= Label(self.master, text="COLUMN_ONE NAME", font = fontStyle)
                 self.label11.place(relx = 0.22, rely = 0.10, anchor = CENTER)
                 self.label22= Label(self.master, text="COLUMN_ONE TYPE \n AND LENGTH", font = fontStyle)
@@ -336,10 +340,7 @@ class cd_table:
                 self.entry88 = Entry(self.master)
                 self.entry88.place(relx = 0.6, rely = 0.80, anchor = CENTER)
         
-                #cursor.execute("CREATE DATABASE %s" %(entry1))
                 def create4():
-                    connection = connect(host="localhost",user="root", database="new_database1",password="55+DAta#3")
-                    cursor5 = connection.cursor()
                     entry111 = self.entry11.get()
                     entry222 = self.entry22.get()
                     entry333 = self.entry33.get()
@@ -352,8 +353,7 @@ class cd_table:
                     com2 = entry333 + " " + entry444
                     com3 = entry555 + " " + entry666
                     com4 = entry777 + " " + entry888
-                    for i in namelist:
-                        cursor5.execute("CREATE TABLE %s (%s, %s, %s, %s)" %(i, com1, com2, com3, com4))
+                    cursor0.execute("CREATE TABLE %s (%s, %s, %s, %s)" %(entry2, com1, com2, com3, com4))
                     
                 def load_back9():
                     self.label11.destroy()
@@ -381,7 +381,7 @@ class cd_table:
                 self.btn6 = tk.Button(self.master, text ="CREATE", font = fontStyle, command = create4)
                 self.btn6.place(relx = 0.6, rely = 0.90, anchor = CENTER)
                 
-            elif entry2 == 5:
+            elif entry3 == 5:
                 self.label11= Label(self.master, text="COLUMN_ONE NAME", font = fontStyle)
                 self.label11.place(relx = 0.22, rely = 0.08 , anchor = CENTER)
                 self.label22= Label(self.master, text="COLUMN_ONE TYPE \n AND LENGTH", font = fontStyle)
@@ -425,10 +425,7 @@ class cd_table:
                 self.entry10 = Entry(self.master)
                 self.entry10.place(relx = 0.6, rely = 0.80, anchor = CENTER)
         
-                #cursor.execute("CREATE DATABASE %s" %(entry1))
                 def create5():
-                    connection = connect(host="localhost",user="root", database="new_database1",password="55+DAta#3")
-                    cursor6 = connection.cursor()
                     entry111 = self.entry11.get()
                     entry222 = self.entry22.get()
                     entry333 = self.entry33.get()
@@ -444,8 +441,7 @@ class cd_table:
                     com3 = entry555 + " " + entry666
                     com4 = entry777 + " " + entry888
                     com5 = entry999 + " " + entry100
-                    for i in namelist:
-                        cursor6.execute("CREATE TABLE %s (%s, %s, %s, %s, %s)" %(i, com1, com2, com3, com4, com5))
+                    cursor0.execute("CREATE TABLE %s (%s, %s, %s, %s, %s)" %(entry2, com1, com2, com3, com4, com5))
 
                 def load_back9():
                     self.label11.destroy()
@@ -482,8 +478,10 @@ class cd_table:
     def load_backk(self):
         self.label1.destroy()
         self.label2.destroy()
+        self.label3.destroy()
         self.entry1.destroy()
         self.entry2.destroy()
+        self.entry3.destroy()
         self.btn1.destroy()
         self.btn2.destroy()
         self.another = mainwindow(self.master)
@@ -573,5 +571,5 @@ class inputs:
 #make window unexpandable(fixed)
 window.resizable(False,False)
 #set default window as mainwindow and run
-mainwindow(window)
+save_connection(window)
 window.mainloop()
